@@ -11,8 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Agregar área de texto editable al editor
   const textArea = document.createElement("textarea");
-  textArea.className =
-    "w-full h-full p-2 font-mono bg-gray-100 focus:outline-none";
+  textArea.className = "w-full h-full p-2 font-mono bg-gray-100 focus:outline-none";
   textArea.placeholder = "Escribe texto en formato Markdown aquí...";
   textArea.style.resize = "none";
   textArea.style.border = "none";
@@ -29,65 +28,25 @@ document.addEventListener("DOMContentLoaded", function () {
     counterElement.textContent = `${wordCount} palabras, ${charCount} caracteres`;
   }
 
-  // Función para convertir Markdown a HTML usando regex
+  // Función para convertir Markdown a HTML usando funciones de los otros módulos
   function convertMarkdownToHTML(markdown) {
     if (!markdown) return "";
 
     let html = markdown;
 
-    // Convertir negrita: **texto** o __texto__ a <strong>texto</strong>
-    html = html.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
-    html = html.replace(/__(.*?)__/g, "<strong>$1</strong>");
+    // Aplicar formato básico de texto (de format.js)
+    html = formatEmphasis(html);
+    html = formatHeaders(html);
     
-    // Convertir itálica: *texto* o _texto_ a <em>texto</em>
-    html = html.replace(/\*(.*?)\*/g, "<em>$1</em>");
-    html = html.replace(/_(.*?)_/g, "<em>$1</em>");
-
-    // Convertir encabezados (h1, h2, h3, h4, h5, h6)
-    html = html.replace(/^# (.+)$/gm, "<h1>$1</h1>");
-    html = html.replace(/^## (.+)$/gm, "<h2>$1</h2>");
-    html = html.replace(/^### (.+)$/gm, "<h3>$1</h3>");
-    html = html.replace(/^#### (.+)$/gm, "<h4>$1</h4>");
-    html = html.replace(/^##### (.+)$/gm, "<h5>$1</h5>");
-    html = html.replace(/^###### (.+)$/gm, "<h6>$1</h6>");
-
-    // Convertir listas no ordenadas
-    // Identificar bloques de lista no ordenada
-    const ulBlocks = html.match(/(?:^[*-] .+$\n?)+/gm);
-    if (ulBlocks) {
-      ulBlocks.forEach((block) => {
-        // Convertir cada línea de la lista a elemento <li>
-        const listItems = block.replace(/^[*-] (.+)$/gm, "<li>$1</li>");
-        // Envolver en <ul>
-        const ulBlock = `<ul>\n${listItems}\n</ul>`;
-        // Reemplazar el bloque original
-        html = html.replace(block, ulBlock);
-      });
-    }
-
-    // Convertir listas ordenadas
-    // Identificar bloques de lista ordenada
-    const olBlocks = html.match(/(?:^\d+\. .+$\n?)+/gm);
-    if (olBlocks) {
-      olBlocks.forEach((block) => {
-        // Convertir cada línea de la lista a elemento <li>
-        const listItems = block.replace(/^\d+\. (.+)$/gm, "<li>$1</li>");
-        // Envolver en <ol>
-        const olBlock = `<ol>\n${listItems}\n</ol>`;
-        // Reemplazar el bloque original
-        html = html.replace(block, olBlock);
-      });
-    }
-
-    // Convertir líneas simples a párrafos (excluyendo las ya procesadas)
-    // Buscar líneas que no sean parte de elementos ya procesados y que no estén vacías
-    html = html.replace(/^(?!<h|<ul|<ol|<li|<strong|<em|$)(.+)$/gm, "<p>$1</p>");
-
-    // Agregar saltos de línea para mejor legibilidad
-    html = html.replace(/<\/h(\d)>/g, "</h$1>\n");
-    html = html.replace(/<\/p>/g, "</p>\n");
-    html = html.replace(/<\/ul>/g, "</ul>\n");
-    html = html.replace(/<\/ol>/g, "</ol>\n");
+    // Aplicar formato de listas (de lists.js)
+    html = formatUnorderedLists(html);
+    html = formatOrderedLists(html);
+    
+    // Aplicar formato de bloques de código (de blocks.js)
+    html = formatCodeBlocks(html);
+    
+    // Formatear párrafos (de format.js)
+    html = formatParagraphs(html);
 
     return html;
   }
@@ -198,7 +157,7 @@ document.addEventListener("DOMContentLoaded", function () {
   textArea.addEventListener('input', function() {
     updateCounter();
     // Si quieres que la vista previa se actualice en tiempo real, descomenta:
-    // updatePreview();
+    updatePreview();
   });
 
   // Inicializar con un ejemplo
@@ -224,6 +183,15 @@ Incluso ***negrita e itálica*** combinadas
 1. Primer paso
 2. Segundo paso
 3. Tercer paso
+
+## Bloques de código
+\`\`\`javascript
+function saludar() {
+  console.log("Hola mundo!");
+}
+\`\`\`
+
+Código en línea: \`const x = 42;\`
 
 Esto es un párrafo normal. Escribe aquí tu contenido en formato Markdown y haz clic en "Generar Vista Previa" para ver el resultado.`;
   

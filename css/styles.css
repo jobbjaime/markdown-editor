@@ -1,0 +1,30 @@
+/* Estilos personalizados para el editor Markdown */
+
+/* Este archivo complementa los estilos de Tailwind CSS */
+
+/* Estilos para el área de código */
+#editor-area textarea:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.3);
+  }
+  
+  /* Estilos para bloques de código */
+  pre {
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    padding: 1rem;
+    overflow-x: auto;
+  }
+  
+  code {
+    font-family: monospace;
+    background-color: #f5f5f5;
+    padding: 0.1rem 0.3rem;
+    border-radius: 3px;
+    font-size: 0.9em;
+  }
+  
+  pre code {
+    background-color: transparent;
+    padding: 0;
+  }
